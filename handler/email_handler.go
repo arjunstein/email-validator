@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/badoux/checkmail"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 type EmailRequest struct {
@@ -18,6 +21,8 @@ type EmailResponse struct {
 }
 
 func CheckEmailHandler(c *gin.Context)  {
+	godotenv.Load()
+
 	var request EmailRequest
 
 	// input validate
@@ -49,6 +54,24 @@ func CheckEmailHandler(c *gin.Context)  {
 			Email: request.Email,
 		})
 		return
+	}
+
+	// Additional SMTP validation
+	var (
+		serverHostName    = os.Getenv("SMTP_HOST") 
+		serverMailAddress = os.Getenv("SMTP_MAIL")
+	)
+
+	smtpErr := checkmail.ValidateHostAndUser(serverHostName, serverMailAddress, request.Email)
+	if smtpErr != nil {
+		if smtpErr, ok := smtpErr.(checkmail.SmtpError); ok {
+			c.JSON(http.StatusOK, EmailResponse{
+				Status: "error",
+				Message: fmt.Sprintf("SMTP Error - Code: %s, Msg: %s", smtpErr.Code(), smtpErr),
+				Email: request.Email,
+			})
+			return
+		}
 	}
 
 	// email valid
