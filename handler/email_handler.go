@@ -25,18 +25,19 @@ func CheckEmailHandler(c *gin.Context)  {
 
 	var request EmailRequest
 
-	// input validate
+	// Bind JSON input
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"message": err.Error(),
-		})
-		return
-	}
+		// when email is empty
+		if request.Email == "" {
+			c.JSON(http.StatusBadRequest, EmailResponse{
+				Status: "error",
+				Message: "Email is required",
+				Email: "",
+			})
+			return
+		}
 
-	// check email
-	err := checkmail.ValidateFormat(request.Email)
-	if err != nil {
+		// email format invalid
 		c.JSON(http.StatusBadRequest, EmailResponse{
 			Status: "error",
 			Message: "Invalid email format",
@@ -46,7 +47,7 @@ func CheckEmailHandler(c *gin.Context)  {
 	}
 
 	// check email connection
-	err = checkmail.ValidateHost(request.Email)
+	err := checkmail.ValidateHost(request.Email)
 	if err != nil {
 		c.JSON(http.StatusOK, EmailResponse{
 			Status: "error",
