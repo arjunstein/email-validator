@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.2]
+
+- 2025-01-09
+
+### Refactor
+
+- ♻️ Refactor: refactor email validation MX records and host
+
 ## [v1.0.1]
 
 - 2024-12-31
