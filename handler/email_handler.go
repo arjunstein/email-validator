@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -15,9 +14,9 @@ type EmailRequest struct {
 }
 
 type EmailResponse struct {
-    Email string `json:"email"`
     Status string `json:"status"`
     Message string `json:"message"`
+    Email string `json:"email"`
 }
 
 func CheckEmailHandler(c *gin.Context)  {
@@ -52,17 +51,7 @@ func CheckEmailHandler(c *gin.Context)  {
     if err := checkmail.ValidateMX(request.Email); err != nil {
         c.JSON(http.StatusBadRequest, EmailResponse{
             Status: "error",
-            Message: "Unresolvable email host",
-            Email: request.Email,
-        })
-        return
-    }
-
-    // Validate email host
-    if err := checkmail.ValidateHost(request.Email); err != nil {
-        c.JSON(http.StatusOK, EmailResponse{
-            Status: "error",
-            Message: "Email not active or does not exist",
+            Message: "Invalid domain email",
             Email: request.Email,
         })
         return
@@ -75,14 +64,12 @@ func CheckEmailHandler(c *gin.Context)  {
     )
 
     if err := checkmail.ValidateHostAndUser(serverHostName, serverMailAddress, request.Email); err != nil {
-        if smtpErr, ok := err.(checkmail.SmtpError); ok {
             c.JSON(http.StatusOK, EmailResponse{
                 Status: "error",
-                Message: fmt.Sprintf("SMTP Error - Code: %s, Msg: %s", smtpErr.Code(), smtpErr),
+                Message: "Email does not exist",
                 Email: request.Email,
             })
             return
-        }
     }
 
     // email valid

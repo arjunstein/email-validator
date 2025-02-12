@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.5]
+
+- 2025-02-12
+
+### Refactor
+
+- ♻️ Refactor: email validation logic in email_handler.go
+
 ## [v1.0.2]
 
 - 2025-01-09
