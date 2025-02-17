@@ -1,5 +1,14 @@
 # Changelog
 
+## [v1.0.9]
+
+- 2025-02-17
+
+### Feature
+
+- ✨ feat: add logging when any smtp error
+- 🔐 chore: add api key validation
+
 ## [v1.0.5]
 
 - 2025-02-12
